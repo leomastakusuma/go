@@ -3,6 +3,7 @@ package Controller
 import (
 	"encoding/json"
 	"log"
+	 "os"
 	"net/http"
 	"../library"
 	"../model"
@@ -34,9 +35,8 @@ func Myprofile(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	response := make(map[string] interface{})
-	response = library.Message(true, "failed e") 
-
-	response["Data"] = arr_user
+	response = library.Message(true, "list data") 
+	response["data"] = arr_user
 	library.Respond(w, response)
 }
 
@@ -56,22 +56,20 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	if errs != nil {
 		println("Exec err:", err.Error())
 	}
+
 	response 	:= make(map[string] interface{})
 	firstName 	:= user.FirstName
 	lastName 	:= user.LastName
-	res, err 	:= stmt.Exec(firstName, lastName)
-	
+	_, err 	= stmt.Exec(firstName, lastName)
+
 	if err != nil {
 		println("Exec err:", err.Error())
-		response = library.Message(true, "failed insert") 
+		response = library.Message(false, "error create user") 
 		library.Respond(w, response)
     } else {
-        id, err := res.LastInsertId()
         if err != nil {
             println("Error:", err.Error())
-		} 
-		println(id)
-		
+		} 		
 		response = library.SuccessInsert() 
 		library.Respond(w, response)
     }
