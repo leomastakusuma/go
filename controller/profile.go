@@ -3,7 +3,6 @@ package Controller
 import (
 	"encoding/json"
 	"log"
-	 "os"
 	"net/http"
 	"../library"
 	"../model"
@@ -35,8 +34,11 @@ func Myprofile(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	response := make(map[string] interface{})
-	response = library.Message(true, "list data") 
-	response["data"] = arr_user
+	response = library.Message(true, "list data")
+	response["datas"] = []int{}
+	if(len(arr_user) > 0){
+		response["datas"] = arr_user
+	}
 	library.Respond(w, response)
 }
 
