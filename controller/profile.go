@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-
 	"../library"
-	"../structs"
+	"../model"
 	"github.com/gorilla/mux"
 )
 
@@ -16,9 +15,9 @@ func Routers(r *mux.Router) {
 }
 
 func Myprofile(w http.ResponseWriter, r *http.Request) {
-	var users structs.Users
-	var arr_user []structs.Users
-	var response structs.Response
+	var users Model.Users
+	var arr_user []Model.Users
+
 	db := library.GetDB()
 	defer db.Close()
 
@@ -26,50 +25,55 @@ func Myprofile(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Print(err)
 	}
+
 	for rows.Next() {
 		if err := rows.Scan(&users.Id, &users.FirstName, &users.LastName); err != nil {
-			log.Fatal(err.Error())
-
+			log.Fatal(err.Error())	
 		} else {
 			arr_user = append(arr_user, users)
 		}
 	}
-	response.Status = true
-	response.Message = "Success"
-	response.Data = arr_user
+	response := make(map[string] interface{})
+	response = library.Message(true, "failed e") 
 
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
+	response["Data"] = arr_user
+	library.Respond(w, response)
 }
 
 func createUser(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
 	db := library.GetDB()
 	defer db.Close()
+
 	stmt, err := db.Prepare("INSERT INTO person(first_name,last_name) VALUES(?,?)")
 	if err != nil {
-		panic(err.Error())
+		println("Exec err:", err.Error())
 	}
-	var user structs.Users
-	var arr_user []structs.Users
-	var response structs.Response
 
-	errs := json.NewDecoder(r.Body).Decode(&user)
-	arr_user = append(arr_user, user)
+	var user Model.Users
+	var arr_user []Model.Users
+	errs 			:= json.NewDecoder(r.Body).Decode(&user)
+	arr_user 		= append(arr_user, user)
 	if errs != nil {
-		panic(err.Error())
+		println("Exec err:", err.Error())
 	}
-
-	firstName := user.FirstName
-	lastName := user.LastName
-	_, err = stmt.Exec(firstName, lastName)
+	response 	:= make(map[string] interface{})
+	firstName 	:= user.FirstName
+	lastName 	:= user.LastName
+	res, err 	:= stmt.Exec(firstName, lastName)
+	
 	if err != nil {
-		panic(err.Error())
-	}
-	response.Status = true
-	response.Message = "Success"
-	response.Data = arr_user
-
-	json.NewEncoder(w).Encode(response)
-
+		println("Exec err:", err.Error())
+		response = library.Message(true, "failed insert") 
+		library.Respond(w, response)
+    } else {
+        id, err := res.LastInsertId()
+        if err != nil {
+            println("Error:", err.Error())
+		} 
+		println(id)
+		
+		response = library.SuccessInsert() 
+		library.Respond(w, response)
+    }
 }
+
