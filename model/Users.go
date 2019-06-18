@@ -2,11 +2,11 @@
 package Model
 
 type Users struct {
-	Id        string `form:"id" json:"id"`
+	Id        int64 `form:"id" json:"id,omitempty"`
 	FirstName string `form:"firstname" json:"firstname"`
 	LastName  string `form:"lastname" json:"lastname"`
 }
 
 type Repositories struct {
-	Repositories []Users
+	Data []Users 
 }
