@@ -7,7 +7,6 @@ import (
 	"../library"
 	"../model"
 	"github.com/gorilla/mux"
-	// "github.com/thedevsaddam/govalidator"
 )
 
 type Restaurant struct {
@@ -27,7 +26,7 @@ func Myprofile(w http.ResponseWriter, r *http.Request) {
 	db := library.GetDB()
 	defer db.Close()
 
-	rows, err := db.Query("Select id,first_name,last_name from person")
+	rows, err := db.Query("Select id,first_name,last_name from person order by id desc")
 	if err != nil {
 		log.Print(err)
 	}
@@ -40,10 +39,10 @@ func Myprofile(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	response := make(map[string] interface{})
-	response = library.Message(true, "list data")
-	response["datas"] = []int{}
+	response = library.Message("list data")
+	response["data"] = []int{}
 	if(len(arr_user) > 0){
-		response["datas"] = arr_user
+		response["data"] = arr_user
 	}
 	library.Respond(w, response)
 }
@@ -84,7 +83,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		println("Exec err:", err.Error())
-		response = library.Message(false, "error create user") 
+		response = library.Message( "error create user") 
 		library.Respond(w, response)
     } else {
         if err != nil {
