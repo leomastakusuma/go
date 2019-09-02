@@ -1,7 +1,7 @@
 package main
 
 import (
-	Controller "./controller"
+	Controller "github.com/second/controller"
 	"net/http"
 	"database/sql"
 	"github.com/gorilla/mux"

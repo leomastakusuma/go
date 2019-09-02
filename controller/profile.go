@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"../library"
-	"../model"
+	"github.com/second/library"
+	"github.com/second/model"
 	"github.com/gorilla/mux"
 )
 
