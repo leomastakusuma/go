@@ -1,12 +1,13 @@
-package Controller
+package controller
 
 import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"github.com/second/library"
-	"github.com/second/model"
+
 	"github.com/gorilla/mux"
+	"github.com/second/library"
+	Model "github.com/second/model"
 )
 
 type Restaurant struct {
@@ -33,15 +34,15 @@ func Myprofile(w http.ResponseWriter, r *http.Request) {
 
 	for rows.Next() {
 		if err := rows.Scan(&users.Id, &users.FirstName, &users.LastName); err != nil {
-			log.Fatal(err.Error())	
+			log.Fatal(err.Error())
 		} else {
 			arr_user = append(arr_user, users)
 		}
 	}
-	response := make(map[string] interface{})
+	response := make(map[string]interface{})
 	response = library.Message("list data")
 	response["data"] = []int{}
-	if(len(arr_user) > 0){
+	if len(arr_user) > 0 {
 		response["data"] = arr_user
 	}
 	library.Response(w, response)
@@ -59,49 +60,49 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 
 	var user Model.Users
 	var arr_user []Model.Users
-	errs 	:= json.NewDecoder(r.Body).Decode(&user)
+	errs := json.NewDecoder(r.Body).Decode(&user)
 	if errs != nil {
 		println("Exec err:", err.Error())
 	}
-	arr_user 		= append(arr_user, user)
+	arr_user = append(arr_user, user)
 
-	response 	:= make(map[string] interface{})
-	firstName 	:= user.FirstName
-	lastName 	:= user.LastName
-	resp, err 	:= stmt.Exec(firstName, lastName)
-	
+	response := make(map[string]interface{})
+	firstName := user.FirstName
+	lastName := user.LastName
+	resp, err := stmt.Exec(firstName, lastName)
+
 	ID, err := resp.LastInsertId()
 	bytes, err := json.Marshal(Model.Users{
-		Id:ID,
-        FirstName: user.FirstName,
-        LastName: user.LastName,
+		Id:        ID,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
 	})
 	var data map[string]interface{}
 	if err := json.Unmarshal(bytes, &data); err != nil {
-        panic(err)
-    }
+		panic(err)
+	}
 
 	if err != nil {
 		println("Exec err:", err.Error())
-		response = library.Message( "error create user") 
+		response = library.Message("error create user")
 		library.Response(w, response)
-    } else {
-        if err != nil {
-            println("Error:", err.Error())
-		} 		
-		response = library.SuccessInsert() 
-		response["data"]= data
+	} else {
+		if err != nil {
+			println("Error:", err.Error())
+		}
+		response = library.SuccessInsert()
+		response["data"] = data
 		library.Response(w, response)
-    }
+	}
 }
 
-func testValidate(w http.ResponseWriter, r *http.Request){
+func testValidate(w http.ResponseWriter, r *http.Request) {
 	var user Model.Repositories
 	b, _ := json.Marshal(user)
-    var dat map[string]interface{}
+	var dat map[string]interface{}
 	if err := json.Unmarshal(b, &dat); err != nil {
-        panic(err)
-    }
+		panic(err)
+	}
 	json.NewEncoder(w).Encode(dat)
 
 }
