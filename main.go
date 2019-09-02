@@ -3,15 +3,14 @@ package main
 import (
 	Controller "github.com/second/controller"
 	"net/http"
-	"database/sql"
 	"github.com/gorilla/mux"
-	_ "github.com/go-sql-driver/mysql"
+	"log"
 )
 
-var db *sql.DB 
 func main() {
 	r := mux.NewRouter()
 	Controller.Routers(r)
-	http.ListenAndServe(":9090", r)
+	log.Println("Starting server on :9090")
+	log.Fatal(http.ListenAndServe(":9090", r))
 
 }

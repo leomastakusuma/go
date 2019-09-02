@@ -44,7 +44,7 @@ func Myprofile(w http.ResponseWriter, r *http.Request) {
 	if(len(arr_user) > 0){
 		response["data"] = arr_user
 	}
-	library.Respond(w, response)
+	library.Response(w, response)
 }
 
 func createUser(w http.ResponseWriter, r *http.Request) {
@@ -84,37 +84,18 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		println("Exec err:", err.Error())
 		response = library.Message( "error create user") 
-		library.Respond(w, response)
+		library.Response(w, response)
     } else {
         if err != nil {
             println("Error:", err.Error())
 		} 		
 		response = library.SuccessInsert() 
 		response["data"]= data
-		library.Respond(w, response)
+		library.Response(w, response)
     }
 }
 
 func testValidate(w http.ResponseWriter, r *http.Request){
-	// rules := govalidator.MapData{
-	// 	"firstname": []string{"required"},
-	// 	"lastname" : []string{"required", "min:4", "max:20", "email"},
-	// }
-
-	// opts := govalidator.Options{
-	// 	Request:         r,        // request object
-	// 	Rules:           rules,    // rules map
-	// 	RequiredDefault: true,     // all the field to be pass the rules
-	// }
-	// v := govalidator.New(opts)
-	// e := v.Validate()
-	// err := map[string]interface{}{"validationError": e}
-	// w.Header().Set("Content-type", "applciation/json")
-	// json.NewEncoder(w).Encode(err)
-	// kucing := map[string]interface{} []
-	// test := map[string]interface{} {"status" : "e", "message" : "s","data" : ""}
-	// json.NewEncoder(w).Encode(kucing)
-
 	var user Model.Repositories
 	b, _ := json.Marshal(user)
     var dat map[string]interface{}
